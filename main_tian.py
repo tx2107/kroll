@@ -246,7 +246,7 @@ def main():
         for row, col in zip(*indices):
             input_dict[name] = str(df.loc[row].iloc[col + 1])
 
-    # Deafult Multiplier = , Prepay Multiplier =  is very unique
+    # Deafult Multiplier = , is very very very very very unique
     for name in INPUT_NAMES_LIST[-3:-1]:
         print(name)
         if input_dict[name] is None:
@@ -254,7 +254,7 @@ def main():
             for row, col in zip(*indices):
                 input_dict['Deafult_Multiplier'] = str(df.loc[row].iloc[col + 1])
                 input_dict['Default_Multiplier'] = str(df.loc[row].iloc[col + 1])
-
+    # Prepay Multiplier = is very unique
     for name in INPUT_NAMES_LIST[-1:]:
         print(name)
         if input_dict[name] is None:
