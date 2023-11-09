@@ -231,6 +231,7 @@ def main():
     for name in INPUT_NAMES_LIST:
         arg_value = getattr(args, name, None)
         input_dict[name] = arg_value
+        print(arg_value)
 
     if input_dict['Deafult_Multiplier'] is not None:
         input_dict['Default_Multiplier'] = input_dict['Deafult_Multiplier']
@@ -243,9 +244,10 @@ def main():
     df = pd.read_excel(xlsx_df_irr, sheet_name='IRR Calculation')
     #names in first bracket ( "B2" to "B12")
     for name in INPUT_NAMES_LIST[:-3]:
-        indices = np.where(df.values == name)
-        for row, col in zip(*indices):
-            input_dict[name] = str(df.loc[row].iloc[col + 1])
+        if input_dict[name] is None:
+            indices = np.where(df.values == name)
+            for row, col in zip(*indices):
+                input_dict[name] = str(df.loc[row].iloc[col + 1])
 
     # Deafult Multiplier = , is very very very very very unique
     for name in INPUT_NAMES_LIST[-3:-1]:
