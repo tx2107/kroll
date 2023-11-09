@@ -141,8 +141,13 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
     out_put_dict['Paydate'] = list[datetime.datetime]()
     out_put_dict['Months'] = list(range(1, Term + 2))
     out_put_dict['Paymnt_Count'] = list(range(Term + 1))
-    date_format = "%Y-%m-%d"
-    Issue_Date_data = datetime.datetime.strptime(Issue_Date, date_format)
+    try:
+        date_format = "%Y-%m-%d"
+        Issue_Date_data = datetime.datetime.strptime(Issue_Date, date_format)
+    except:
+        date_format = "%m/%d/%Y"
+        Issue_Date_data = datetime.datetime.strptime(Issue_Date, date_format)
+
     for month_i in out_put_dict['Months']:
         # fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
         Paydate_i = create_valid_date(Issue_Date_data.year + (Issue_Date_data.month + month_i - 1) // 12,
@@ -291,6 +296,7 @@ if __name__ == "__main__":
     
     I read default value from 'Loan IRR.xlsx'
     unless you input a different number like below:
+    date_format = "%Y-%m-%d" or "%m/%d/%Y" if you want input a different 'Issue_Date'
     INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
                     'Invested', 'Outstanding_Balance', 'Recovery_Rate',
                     'Purchase_Premium', 'Servicing_Fee', 'Earnout_Fee',
