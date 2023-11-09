@@ -1,6 +1,17 @@
 import datetime
 from math import pow
 import pandas as pd
+import argparse
+import numpy as np
+
+OUTPUT_NAMES_LIST = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal', 'Scheduled_Interest',
+                     'Scheduled_Balance',
+                     'Prepay_Speed', 'Default_Rate', 'Recovery', 'Servicing_CF', 'Earnout_CF', 'Balance', 'Principal',
+                     'Default', 'Prepay', 'Interest_Amount', 'Total_CF']
+INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
+                    'Invested', 'Outstanding_Balance', 'Recovery_Rate',
+                    'Purchase_Premium', 'Servicing_Fee', 'Earnout_Fee',
+                    'Deafult_Multiplier', 'Prepay_Multiplier']
 
 
 # fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
@@ -121,20 +132,16 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
                          Earnout_Fee: float = 0.025,
                          Deafult_Multiplier: float = 1.00, Prepay_Multiplier: float = 1.00,
                          xlsx_df=pd.ExcelFile('Loan IRR.xlsx')) -> float:
-    names_list = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal', 'Scheduled_Interest', 'Scheduled_Balance',
-                  'Prepay_Speed', 'Default_Rate', 'Recovery', 'Servicing_CF', 'Earnout_CF', 'Balance', 'Principal',
-                  'Default', 'Prepay', 'Interest_Amount', 'Total_CF']
-
     out_put_dict = dict()
     # initiating all columns
-    for name in names_list:
+    for name in OUTPUT_NAMES_LIST:
         if name != 'Paydate':
             out_put_dict[name] = list[float]()
 
     out_put_dict['Paydate'] = list[datetime.datetime]()
     out_put_dict['Months'] = list(range(1, Term + 2))
     out_put_dict['Paymnt_Count'] = list(range(Term + 1))
-    date_format = "%m/%d/%Y"
+    date_format = "%Y-%m-%d"
     Issue_Date_data = datetime.datetime.strptime(Issue_Date, date_format)
     for month_i in out_put_dict['Months']:
         # fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
@@ -185,19 +192,19 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
                 out_put_dict['Servicing_CF'][-1] - out_put_dict['Earnout_CF'][-1])
 
     result_data = list()
-    for name in names_list:
+    for name in OUTPUT_NAMES_LIST:
         result_data.append(out_put_dict[name])
 
     # Convert to a pandas DataFrame
     df = pd.DataFrame(result_data).T
-    df.columns = names_list
+    df.columns = OUTPUT_NAMES_LIST
     # Set option to display all columns
     pd.set_option('display.max_columns', None)
 
     df['Paydate'] = pd.to_datetime(df['Paydate']).dt.date
     # Set option to display all rows
     pd.set_option('display.max_rows', None)
-    #print(df.dtypes)
+    # print(df.dtypes)
     print('------------------------------------full--data------------------------------------')
     print(df)
     print('---------------------------------------head---------------------------------------')
@@ -212,19 +219,67 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
     return result
 
 
+def main():
+    import argparse
+    input_dict = dict()
+    parser = argparse.ArgumentParser(description='Process IRR.')
+    for name in INPUT_NAMES_LIST:
+        parser.add_argument('--{}'.format(name), type=str)
+    # parser.add_argument('--grade', type=str, help='Grade')
+    args = parser.parse_args()
+
+    for name in INPUT_NAMES_LIST:
+        arg_value = getattr(args, name, None)
+        input_dict[name] = arg_value
+    # read default value from 'Loan IRR.xlsx'
+    xlsx_df_irr = pd.ExcelFile('Loan IRR.xlsx')
+    df = pd.read_excel(xlsx_df_irr, sheet_name='IRR Calculation')
+    for name in INPUT_NAMES_LIST[:-2]:
+        indices = np.where(df.values == name)
+        for row, col in zip(*indices):
+            input_dict[name] = str(df.loc[row].iloc[col + 1])
+
+    # Deafult Multiplier = , Prepay Multiplier =  is very unique
+    for name in INPUT_NAMES_LIST[-2:]:
+        if input_dict[name] is None:
+            indices = np.where(df.values == name.replace("_", " ") + " = ")
+            for row, col in zip(*indices):
+                input_dict[name] = str(df.loc[row].iloc[col + 1])
+
+    for name in INPUT_NAMES_LIST:
+        print("{}---{}".format(name, input_dict[name]))
+    result_irr = irr_flow_preparation(Valuation_Date=input_dict['Valuation_Date'][:10], Grade=input_dict['Grade'],
+                                      Issue_Date=input_dict['Issue_Date'][:10], Term=int(input_dict['Term']),
+                                      CouponRate=float(input_dict['CouponRate']),
+                                      Invested=float(input_dict['Invested']),
+                                      Outstanding_Balance=float(input_dict['Outstanding_Balance']),
+                                      Recovery_Rate=float(input_dict['Recovery_Rate']),
+                                      Purchase_Premium=float(input_dict['Purchase_Premium']),
+                                      Servicing_Fee=float(input_dict['Servicing_Fee']),
+                                      Earnout_Fee=float(input_dict['Earnout_Fee']),
+                                      Deafult_Multiplier=float(input_dict['Deafult_Multiplier']),
+                                      Prepay_Multiplier=float(input_dict['Prepay_Multiplier']), xlsx_df=xlsx_df_irr)
+    print(f"The IRR is: {result_irr:.6f}%")  # 5.4903063297685728
+
+
 if __name__ == "__main__":
     '''
     I AM USING PYTHON 3.11.
-    assumption: date_format is a string with format of  "%m/%d/%Y"
+    I read default value from 'Loan IRR.xlsx'
+    unless you input a different number like below:
+    INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
+                    'Invested', 'Outstanding_Balance', 'Recovery_Rate',
+                    'Purchase_Premium', 'Servicing_Fee', 'Earnout_Fee',
+                    'Deafult_Multiplier', 'Prepay_Multiplier']
+    
+    python3 main_tian.py --Valuation_Date xxx --Grade C4 --Deafult_Multiplier 1
+    python3 main_tian.py --Valuation_Date xxx --Grade C2 --Deafult_Multiplier 2
+
     fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
     xlsx file was saved at the same directory of python codes
     xlsx = pd.ExcelFile('Loan IRR.xlsx')
     the content in the Excel will need to exactly match what you send me in the email.
+
+
     '''
-    xlsx_df_irr = pd.ExcelFile('Loan IRR.xlsx')
-    result_irr = irr_flow_preparation(Valuation_Date="12/31/2017", Grade="C4", Issue_Date="8/24/2015", Term=36,
-                                      CouponRate=.280007632124385,
-                                      Invested=7500.00, Outstanding_Balance=3228.61, Recovery_Rate=0.08,
-                                      Purchase_Premium=0.051422082, Servicing_Fee=0.025, Earnout_Fee=0.025,
-                                      Deafult_Multiplier=1.00, Prepay_Multiplier=1.00, xlsx_df=xlsx_df_irr)
-    print(f"The IRR is: {result_irr:.6f}%")  # 5.4903063297685728
+    main()
