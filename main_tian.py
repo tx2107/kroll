@@ -248,7 +248,7 @@ def main():
 
     # Deafult Multiplier = , is very very very very very unique
     for name in INPUT_NAMES_LIST[-3:-1]:
-        print(name)
+        #print(name)
         if input_dict[name] is None:
             indices = np.where(df.values == name.replace("_", " ") + " = ")
             for row, col in zip(*indices):
@@ -256,7 +256,7 @@ def main():
                 input_dict['Default_Multiplier'] = str(df.loc[row].iloc[col + 1])
     # Prepay Multiplier = is very unique
     for name in INPUT_NAMES_LIST[-1:]:
-        print(name)
+        #print(name)
         if input_dict[name] is None:
             indices = np.where(df.values == name.replace("_", " ") + " = ")
             for row, col in zip(*indices):
