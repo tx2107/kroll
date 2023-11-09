@@ -291,8 +291,8 @@ if __name__ == "__main__":
     I AM USING PYTHON 3.11.
     
     I strictly followed the wordings from the original excel you send to me. please make sure didn't change any wording from the excel 
-    For example I used "Deafult Multiplier = " at B14 of the excel. even it is a typo.
-    Furturemore I accepted "Default Multiplier" from the input
+    For example I used "Deafult Multiplier = " at B14 of tab of IRR Calculation of the excel. even it is a typo.
+    Furthermore I accepted "Default Multiplier" from the input
     
     I read default value from 'Loan IRR.xlsx'
     unless you input a different number like below:
@@ -305,6 +305,8 @@ if __name__ == "__main__":
     i.e.
     python3 main_tian.py --Valuation_Date xxx --Grade C4 --Deafult_Multiplier 1
     python3 main_tian.py --Valuation_Date xxx --Grade C2 --Default_Multiplier 2
+    python3 main_tian.py --Valuation_Date xxx --Grade C1 --Default_Multiplier 2 --Issue_Date 2023-08-09
+    python3 main_tian.py --Valuation_Date xxx --Grade C4 --Deafult_Multiplier 1 --Issue_Date 10/07/2023
 
     fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
     
