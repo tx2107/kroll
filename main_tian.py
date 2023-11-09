@@ -231,7 +231,7 @@ def main():
     for name in INPUT_NAMES_LIST:
         arg_value = getattr(args, name, None)
         input_dict[name] = arg_value
-        print(arg_value)
+        #print(arg_value)
 
     if input_dict['Deafult_Multiplier'] is not None:
         input_dict['Default_Multiplier'] = input_dict['Deafult_Multiplier']
