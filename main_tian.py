@@ -11,7 +11,7 @@ OUTPUT_NAMES_LIST = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal',
 INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
                     'Invested', 'Outstanding_Balance', 'Recovery_Rate',
                     'Purchase_Premium', 'Servicing_Fee', 'Earnout_Fee',
-                    'Deafult_Multiplier', 'Prepay_Multiplier']
+                    'Deafult_Multiplier', 'Default_Multiplier', 'Prepay_Multiplier']
 
 
 # fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
@@ -231,16 +231,31 @@ def main():
     for name in INPUT_NAMES_LIST:
         arg_value = getattr(args, name, None)
         input_dict[name] = arg_value
+
+    if input_dict['Deafult_Multiplier'] is not None:
+        input_dict['Default_Multiplier'] = input_dict['Deafult_Multiplier']
+
+    if input_dict['Default_Multiplier'] is not None:
+        input_dict['Deafult_Multiplier'] = input_dict['Default_Multiplier']
+
     # read default value from 'Loan IRR.xlsx'
     xlsx_df_irr = pd.ExcelFile('Loan IRR.xlsx')
     df = pd.read_excel(xlsx_df_irr, sheet_name='IRR Calculation')
-    for name in INPUT_NAMES_LIST[:-2]:
+    for name in INPUT_NAMES_LIST[:-3]:
         indices = np.where(df.values == name)
         for row, col in zip(*indices):
             input_dict[name] = str(df.loc[row].iloc[col + 1])
 
     # Deafult Multiplier = , Prepay Multiplier =  is very unique
-    for name in INPUT_NAMES_LIST[-2:]:
+    for name in INPUT_NAMES_LIST[-3:-1]:
+        print(name)
+        if input_dict[name] is None:
+            indices = np.where(df.values == name.replace("_", " ") + " = ")
+            for row, col in zip(*indices):
+                input_dict['Deafult_Multiplier'] = str(df.loc[row].iloc[col + 1])
+                input_dict['Default_Multiplier'] = str(df.loc[row].iloc[col + 1])
+
+    for name in INPUT_NAMES_LIST[-1:]:
         print(name)
         if input_dict[name] is None:
             indices = np.where(df.values == name.replace("_", " ") + " = ")
@@ -268,16 +283,17 @@ if __name__ == "__main__":
     I AM USING PYTHON 3.11.
     I read default value from 'Loan IRR.xlsx'
     I strictly followed the wordings from the original excel you send to me. please make sure didn't change any wording from the excel 
-    For example i used "Deafult Multiplier = " at B14 of the excel. even it is a typo.
+    For example I used "Deafult Multiplier = " at B14 of the excel. even it is a typo.
+    Furturemore I accepted "Default Multiplier" from the input
     
     unless you input a different number like below:
     INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
                     'Invested', 'Outstanding_Balance', 'Recovery_Rate',
                     'Purchase_Premium', 'Servicing_Fee', 'Earnout_Fee',
-                    'Deafult_Multiplier', 'Prepay_Multiplier']
+                    'Deafult_Multiplier', 'Default_Multiplier', 'Prepay_Multiplier']
     
     python3 main_tian.py --Valuation_Date xxx --Grade C4 --Deafult_Multiplier 1
-    python3 main_tian.py --Valuation_Date xxx --Grade C2 --Deafult_Multiplier 2
+    python3 main_tian.py --Valuation_Date xxx --Grade C2 --Default_Multiplier 2
 
     fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
     xlsx file was saved at the same directory of python codes
