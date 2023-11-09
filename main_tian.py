@@ -241,6 +241,7 @@ def main():
     # read default value from 'Loan IRR.xlsx'
     xlsx_df_irr = pd.ExcelFile('Loan IRR.xlsx')
     df = pd.read_excel(xlsx_df_irr, sheet_name='IRR Calculation')
+    #names in first bracket ( "B2" to "B12")
     for name in INPUT_NAMES_LIST[:-3]:
         indices = np.where(df.values == name)
         for row, col in zip(*indices):
