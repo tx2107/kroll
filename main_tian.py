@@ -241,6 +241,7 @@ def main():
 
     # Deafult Multiplier = , Prepay Multiplier =  is very unique
     for name in INPUT_NAMES_LIST[-2:]:
+        print(name)
         if input_dict[name] is None:
             indices = np.where(df.values == name.replace("_", " ") + " = ")
             for row, col in zip(*indices):
@@ -266,6 +267,9 @@ if __name__ == "__main__":
     '''
     I AM USING PYTHON 3.11.
     I read default value from 'Loan IRR.xlsx'
+    I strictly followed the wordings from the original excel you send to me. please make sure didn't change any wording from the excel 
+    For example i used "Deafult Multiplier = " at B14 of the excel. even it is a typo.
+    
     unless you input a different number like below:
     INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
                     'Invested', 'Outstanding_Balance', 'Recovery_Rate',
