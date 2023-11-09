@@ -220,7 +220,7 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
 
 
 def main():
-    import argparse
+
     input_dict = dict()
     parser = argparse.ArgumentParser(description='Process IRR.')
     for name in INPUT_NAMES_LIST:
