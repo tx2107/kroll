@@ -113,79 +113,79 @@ def irr_calculation(cashflows, iterations=1000, guess=0.1):
     return rate
 
 
-def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", Issue_Date="8/24/2015", Term: int = 36,
+def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", Issue_Date: str = "8/24/2015",
+                         Term: int = 36,
                          CouponRate: float = .280007632124385,
                          Invested: float = 7500.00, Outstanding_Balance: float = 3228.61, Recovery_Rate: float = 0.08,
                          Purchase_Premium: float = 0.051422082, Servicing_Fee: float = 0.025,
                          Earnout_Fee: float = 0.025,
                          Deafult_Multiplier: float = 1.00, Prepay_Multiplier: float = 1.00,
                          xlsx_df=pd.ExcelFile('Loan IRR.xlsx')) -> float:
+
     names_list = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal', 'Scheduled_Interest', 'Scheduled_Balance',
                   'Prepay_Speed', 'Default_Rate', 'Recovery', 'Servicing_CF', 'Earnout_CF', 'Balance', 'Principal',
                   'Default', 'Prepay', 'Interest_Amount', 'Total_CF']
 
-    Months = list(range(1, Term + 2))
-    Paymnt_Count = list(range(Term + 1))
+    out_put_dict = dict()
+    # initiating all columns
+    for name in names_list:
+        out_put_dict[name] = list()
+
+    out_put_dict['Months'] = list(range(1, Term + 2))
+    out_put_dict['Paymnt_Count'] = list(range(Term + 1))
     date_format = "%m/%d/%Y"
     Issue_Date_data = datetime.datetime.strptime(Issue_Date, date_format)
-    Paydate = list()
-    for month_i in Months:
+    for month_i in out_put_dict['Months']:
         # fixed the date of 31st issues to match the DATE function in excel in case Issue_Date_data.day = 31
         Paydate_i = create_valid_date(Issue_Date_data.year + (Issue_Date_data.month + month_i - 1) // 12,
                                       (Issue_Date_data.month + month_i - 1 - 1) % 12 + 1, Issue_Date_data.day)
-        Paydate.append(Paydate_i)
+        out_put_dict['Paydate'].append(Paydate_i)
 
     rate = CouponRate / 12
-    Scheduled_Principal = list()
-    Scheduled_Interest = list()
-    Scheduled_Balance = list()
-    Prepay_Speed = list()
-    Default_Rate = list()
-    Default = list()
-    Principal = list()
-    Balance = list()
-    Prepay = list()
-    Recovery = list()
-    Servicing_CF = list()
-    Earnout_CF = list()
-    Interest_Amount = list()
-    Total_CF = list()
-    for month_i in Months:
-        total_payment = pmt(rate, Term, -1 * Invested)
+
+    for month_i in out_put_dict['Months']:
         principal_payment = ppmt(rate, month_i - 1, Term, -1 * Invested)
         interest_payment = ipmt(rate, month_i - 1, Term, -1 * Invested)
-        Scheduled_Principal.append(principal_payment)
-        Scheduled_Interest.append(interest_payment)
-        Scheduled_Balance.append(Invested - sum_principle_paid(rate, month_i, Term, -1 * Invested))
-        Prepay_Speed.append(get_prepay_speed(xlsx_df, "Prepay", Term, month_i))
-        Default_Rate.append(get_default_rate(xlsx_df, "Charged Off", Term, Grade, month_i))
-        Earnout_CF.append(Earnout_Fee / 2 * Invested if month_i == 13 or month_i == 19 else 0)
+        out_put_dict['Scheduled_Principal'].append(principal_payment)
+        out_put_dict['Scheduled_Interest'].append(interest_payment)
+        out_put_dict['Scheduled_Balance'].append(Invested - sum_principle_paid(rate, month_i, Term, -1 * Invested))
+        out_put_dict['Prepay_Speed'].append(get_prepay_speed(xlsx_df, "Prepay", Term, month_i))
+        out_put_dict['Default_Rate'].append(get_default_rate(xlsx_df, "Charged Off", Term, Grade, month_i))
+        out_put_dict['Earnout_CF'].append(Earnout_Fee / 2 * Invested if month_i == 13 or month_i == 19 else 0)
         if month_i == 1:
-            Default.append(0)
-            Prepay.append(0)
-            Principal.append(0)
-            Balance.append(Invested)
-            Recovery.append(0)
-            Servicing_CF.append(0)
-            Interest_Amount.append(0)
-            Total_CF.append(-1 * Invested * (1 + Purchase_Premium))
+            out_put_dict['Default'].append(0)
+            out_put_dict['Prepay'].append(0)
+            out_put_dict['Principal'].append(0)
+            out_put_dict['Balance'].append(Invested)
+            out_put_dict['Recovery'].append(0)
+            out_put_dict['Servicing_CF'].append(0)
+            out_put_dict['Interest_Amount'].append(0)
+            out_put_dict['Total_CF'].append(-1 * Invested * (1 + Purchase_Premium))
 
         else:
-            Default.append(Balance[-1] * Default_Rate[-2] * Deafult_Multiplier)
-            Prepay.append(
-                (Balance[-1] - (((Balance[-1] - Scheduled_Interest[-1]) / Scheduled_Balance[-2]) * Scheduled_Principal[
-                    -1])) * Prepay_Speed[-1] * Prepay_Multiplier)
-            Principal.append(
-                (Balance[-1] - Default[-1]) / Scheduled_Balance[-2] * Scheduled_Principal[-1] + Prepay[-1])
-            Balance.append(Balance[-1] - Default[-1] - Principal[-1])
-            Recovery.append(Default[-1] * Recovery_Rate)
-            Servicing_CF.append((Balance[-2] - Default[-1]) * Servicing_Fee / 12)
-            Interest_Amount.append((Balance[-2] - Default[-1]) * CouponRate / 12)
-            Total_CF.append(Principal[-1] + Interest_Amount[-1] + Recovery[-1] - Servicing_CF[-1] - Earnout_CF[-1])
+            out_put_dict['Default'].append(
+                out_put_dict['Balance'][-1] * out_put_dict['Default_Rate'][-2] * Deafult_Multiplier)
+            out_put_dict['Prepay'].append(
+                (out_put_dict['Balance'][-1] - (((out_put_dict['Balance'][-1] - out_put_dict['Scheduled_Interest'][
+                    -1]) / out_put_dict['Scheduled_Balance'][-2]) * out_put_dict['Scheduled_Principal'][
+                                                    -1])) * out_put_dict['Prepay_Speed'][-1] * Prepay_Multiplier)
+            out_put_dict['Principal'].append(
+                (out_put_dict['Balance'][-1] - out_put_dict['Default'][-1]) / out_put_dict['Scheduled_Balance'][-2] *
+                out_put_dict['Scheduled_Principal'][-1] + out_put_dict['Prepay'][-1])
+            out_put_dict['Balance'].append(
+                out_put_dict['Balance'][-1] - out_put_dict['Default'][-1] - out_put_dict['Principal'][-1])
+            out_put_dict['Recovery'].append(out_put_dict['Default'][-1] * Recovery_Rate)
+            out_put_dict['Servicing_CF'].append(
+                (out_put_dict['Balance'][-2] - out_put_dict['Default'][-1]) * Servicing_Fee / 12)
+            out_put_dict['Interest_Amount'].append(
+                (out_put_dict['Balance'][-2] - out_put_dict['Default'][-1]) * CouponRate / 12)
+            out_put_dict['Total_CF'].append(
+                out_put_dict['Principal'][-1] + out_put_dict['Interest_Amount'][-1] + out_put_dict['Recovery'][-1] -
+                out_put_dict['Servicing_CF'][-1] - out_put_dict['Earnout_CF'][-1])
 
     result_data = list()
     for name in names_list:
-        result_data.append(locals()[name])
+        result_data.append(out_put_dict[name])
 
     # Convert to a pandas DataFrame
     df = pd.DataFrame(result_data).T
@@ -195,7 +195,6 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
 
     # Set option to display all rows
     pd.set_option('display.max_rows', None)
-    # Assuming `data_frame` is your large DataFrame
     print('------------------------------------full--data------------------------------------')
     print(df)
     print('---------------------------------------head---------------------------------------')
@@ -204,10 +203,9 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
     print('---------------------------------------tail---------------------------------------')
     # Print the last few rows in a nice format
     print(df.tail())
-
     print()
     print()
-    result = irr_calculation(Total_CF) * 12 * 100
+    result = irr_calculation(out_put_dict['Total_CF']) * 12 * 100
     return result
 
 
@@ -225,4 +223,4 @@ if __name__ == "__main__":
                                       Invested=7500.00, Outstanding_Balance=3228.61, Recovery_Rate=0.08,
                                       Purchase_Premium=0.051422082, Servicing_Fee=0.025, Earnout_Fee=0.025,
                                       Deafult_Multiplier=1.00, Prepay_Multiplier=1.00, xlsx_df=xlsx_df_irr)
-    print(f"The IRR is: {result_irr:.6f}%")  # 5.4903063297685728
+    print(f"The IRR is: {result_irr:.16f}%")  # 5.4903063297685728
