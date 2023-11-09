@@ -223,4 +223,4 @@ if __name__ == "__main__":
                                       Invested=7500.00, Outstanding_Balance=3228.61, Recovery_Rate=0.08,
                                       Purchase_Premium=0.051422082, Servicing_Fee=0.025, Earnout_Fee=0.025,
                                       Deafult_Multiplier=1.00, Prepay_Multiplier=1.00, xlsx_df=xlsx_df_irr)
-    print(f"The IRR is: {result_irr:.16f}%")  # 5.4903063297685728
+    print(f"The IRR is: {result_irr:.6f}%")  # 5.4903063297685728
