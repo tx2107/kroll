@@ -115,7 +115,7 @@ def irr_calculation(cashflows, iterations=1000, guess=0.1):
         # Calculate the derivative (slope) of the NPV function at the current rate
         derivative_npv = sum([-i * cashflow / (1 + rate) ** (i + 1) for i, cashflow in enumerate(cashflows)])
 
-        # Newton-Raphson method formula to improve our guess
+        # Isaac Newton and Joseph Raphson method formula to improve our guess
         rate -= net_present_value / derivative_npv
 
         # Exit loop if we're close enough to zero
