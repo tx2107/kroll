@@ -295,8 +295,7 @@ if __name__ == "__main__":
     For example I used "Deafult Multiplier = " at B14 of tab of IRR Calculation of the excel. even it is a typo.
     Furthermore I accepted "Default_Multiplier" from the input
     
-    I read default value from 'Loan IRR.xlsx'
-    unless you input a different number like below:
+    I read default value from 'Loan IRR.xlsx'    UNLESS you input a different number like below:
     date_format = "%Y-%m-%d" or "%m/%d/%Y" if you want input a different 'Issue_Date'
     INPUT_NAMES_LIST = ['Valuation_Date', 'Grade', 'Issue_Date', 'Term', 'CouponRate',
                     'Invested', 'Outstanding_Balance', 'Recovery_Rate',
