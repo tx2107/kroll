@@ -121,7 +121,6 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
                          Earnout_Fee: float = 0.025,
                          Deafult_Multiplier: float = 1.00, Prepay_Multiplier: float = 1.00,
                          xlsx_df=pd.ExcelFile('Loan IRR.xlsx')) -> float:
-
     names_list = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal', 'Scheduled_Interest', 'Scheduled_Balance',
                   'Prepay_Speed', 'Default_Rate', 'Recovery', 'Servicing_CF', 'Earnout_CF', 'Balance', 'Principal',
                   'Default', 'Prepay', 'Interest_Amount', 'Total_CF']
@@ -129,8 +128,10 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
     out_put_dict = dict()
     # initiating all columns
     for name in names_list:
-        out_put_dict[name] = list()
+        if name != 'Paydate':
+            out_put_dict[name] = list[float]()
 
+    out_put_dict['Paydate'] = list[datetime.datetime]()
     out_put_dict['Months'] = list(range(1, Term + 2))
     out_put_dict['Paymnt_Count'] = list(range(Term + 1))
     date_format = "%m/%d/%Y"
