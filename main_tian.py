@@ -171,7 +171,7 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
             Total_CF.append(-1 * Invested * (1 + Purchase_Premium))
 
         else:
-            Default.append(Balance[-1] * Default_Rate[-2])
+            Default.append(Balance[-1] * Default_Rate[-2] * Deafult_Multiplier)
             Prepay.append(
                 (Balance[-1] - (((Balance[-1] - Scheduled_Interest[-1]) / Scheduled_Balance[-2]) * Scheduled_Principal[
                     -1])) * Prepay_Speed[-1] * Prepay_Multiplier)
