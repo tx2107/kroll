@@ -194,8 +194,10 @@ def irr_flow_preparation(Valuation_Date: str = "12/31/2017", Grade: str = "C4", 
     # Set option to display all columns
     pd.set_option('display.max_columns', None)
 
+    df['Paydate'] = pd.to_datetime(df['Paydate']).dt.date
     # Set option to display all rows
     pd.set_option('display.max_rows', None)
+    #print(df.dtypes)
     print('------------------------------------full--data------------------------------------')
     print(df)
     print('---------------------------------------head---------------------------------------')
