@@ -292,7 +292,7 @@ if __name__ == "__main__":
     
     I strictly followed the wordings from the original excel you send to me. please make sure didn't change any wording from the excel 
     For example I used "Deafult Multiplier = " at B14 of tab of IRR Calculation of the excel. even it is a typo.
-    Furthermore I accepted "Default Multiplier" from the input
+    Furthermore I accepted "Default_Multiplier" from the input
     
     I read default value from 'Loan IRR.xlsx'
     unless you input a different number like below:
