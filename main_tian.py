@@ -291,6 +291,10 @@ if __name__ == "__main__":
     '''
     I am using Python 3.11.
 
+    The xlsx file was saved in the same directory as the Python codes:
+    xlsx = pd.ExcelFile('Loan IRR.xlsx')
+    The content in the Excel file will need to exactly match what you sent me in the email.
+    
     I strictly adhered to the wording from the original Excel file you sent to me. 
     Please ensure that no wording from the Excel file has been altered. 
     For example I used "Deafult Multiplier = " at B14 of tab of IRR Calculation of the excel. even it is a typo.
@@ -312,9 +316,7 @@ if __name__ == "__main__":
 
     I've adjusted the handling of dates to align with the DATE function in Excel in case the 'Issue_Date_data.day' equals 31.
     
-    The xlsx file was saved in the same directory as the Python codes:
-    xlsx = pd.ExcelFile('Loan IRR.xlsx')
-    The content in the Excel file will need to exactly match what you sent me in the email.
+
     OUTPUT_NAMES_LIST = ['Months', 'Paymnt_Count', 'Paydate', 'Scheduled_Principal', 'Scheduled_Interest',
                      'Scheduled_Balance',
                      'Prepay_Speed', 'Default_Rate', 'Recovery', 'Servicing_CF', 'Earnout_CF', 'Balance', 'Principal',
